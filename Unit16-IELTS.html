@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MEGA TEST PRO - Unit 16: Weather & Places (IELTS Edition)</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&family=Fredoka+One&display=swap');
+
+        :root {
+            --c-main: #1976D2; --c-bg: #E3F2FD; --c-box: #FFFFFF; --c-text: #333;
+            --c-red: #D32F2F; --c-green: #388E3C; --c-orange: #F57C00; --c-purple: #7B1FA2;
+            --c-teal: #00796B; --c-pink: #C2185B;
+        }
+
+        body { font-family: 'Nunito', sans-serif; background-color: var(--c-bg); margin: 0; padding: 20px; padding-top: 100px; padding-bottom: 120px; color: var(--c-text); }
+
+        /* --- STICKY HEADER --- */
+        #top-bar { position: fixed; top: 0; left: 0; width: 100%; background: rgba(255,255,255,0.95); box-shadow: 0 4px 15px rgba(0,0,0,0.1); z-index: 1000; padding: 10px 20px; box-sizing: border-box; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--c-main); }
+        .progress-container { flex-grow: 1; max-width: 500px; margin: 0 20px; }
+        .progress-bar { background: #E0E0E0; height: 12px; border-radius: 10px; overflow: hidden; }
+        .progress-fill { background: linear-gradient(90deg, #4CAF50, #8BC34A); width: 0%; height: 100%; transition: 0.3s; }
+        .score-box { background: #FFF9C4; padding: 5px 15px; border-radius: 20px; font-weight: bold; color: #F57F17; border: 2px solid #FBC02D; font-size: 1.2em;}
+        
+        /* --- FLOATING AUDIO SPEED CONTROL --- */
+        #audio-controls { position: fixed; bottom: 20px; left: 20px; background: white; border: 3px solid var(--c-orange); padding: 10px 15px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); z-index: 1000; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+        #audio-controls strong { color: var(--c-orange); font-size: 0.9em; text-transform: uppercase; }
+        .speed-row { display: flex; gap: 5px; }
+        .btn-spd { background: #FFF3E0; border: 1px solid #FFB74D; padding: 5px 10px; border-radius: 10px; cursor: pointer; font-weight: bold; color: #E65100; font-size: 0.85em; transition: 0.2s; }
+        .btn-spd.active { background: var(--c-orange); color: white; transform: scale(1.1); }
+
+        /* --- CONTAINER & HEADINGS --- */
+        .container { max-width: 1000px; margin: 0 auto; }
+        .mega-title { text-align: center; font-family: 'Fredoka One', cursive; font-size: 3em; color: var(--c-main); text-shadow: 2px 2px 0px white; margin-bottom: 5px; }
+        .sub-title { text-align: center; font-weight: bold; color: #555; font-size: 1.2em; margin-bottom: 40px; }
+
+        .part-header { color: white; padding: 15px 25px; font-size: 1.5em; font-weight: 800; border-radius: 15px 15px 0 0; margin-top: 50px; text-transform: uppercase; display: flex; justify-content: space-between; }
+        .part-box { background: var(--c-box); padding: 30px; border-radius: 0 0 15px 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); margin-bottom: 30px; border-left: 5px solid; border-right: 5px solid; border-bottom: 5px solid; }
+        .task-title { font-size: 1.3em; font-weight: bold; border-bottom: 2px dashed #BBDEFB; padding-bottom: 10px; margin-bottom: 20px; margin-top: 30px; }
+        .task-title:first-child { margin-top: 0; }
+
+        /* --- INPUTS & UI --- */
+        input[type="text"] { padding: 8px 12px; border: 2px solid #90CAF9; border-radius: 8px; font-size: 1.1em; font-family: 'Nunito', sans-serif; outline: none; transition: 0.3s; margin: 0 5px; }
+        input[type="text"]:focus { border-color: var(--c-main); background: #F3E5F5; }
+        .correct { border-color: #4CAF50 !important; background: #E8F5E9 !important; color: #2E7D32; font-weight: bold; }
+        .wrong { border-color: #F44336 !important; background: #FFEBEE !important; color: #C62828; }
+        
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
+        .q-card { background: #FAFAFA; border: 1px solid #E0E0E0; padding: 15px; border-radius: 10px; position: relative; }
+        .q-card:hover { border-color: #64B5F6; }
+        
+        .btn-play { background: var(--c-main); color: white; border: none; padding: 8px 20px; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 1em; display: inline-flex; align-items: center; gap: 5px; box-shadow: 0 4px 0 #1565C0; transition: 0.1s; margin-bottom: 10px; }
+        .btn-play:active { transform: translateY(4px); box-shadow: 0 0 0 #1565C0; }
+
+        /* MCQ */
+        .mcq-label { display: block; background: white; border: 2px solid #E0E0E0; padding: 10px 15px; margin-bottom: 8px; border-radius: 8px; cursor: pointer; transition: 0.2s; font-weight: 600; }
+        .mcq-label:hover { background: #E3F2FD; border-color: #90CAF9; }
+        input[type="radio"] { transform: scale(1.3); margin-right: 10px; cursor: pointer; }
+        .mcq-correct { background: #E8F5E9; border-color: #4CAF50; color: #1B5E20; }
+        .mcq-wrong { background: #FFEBEE; border-color: #F44336; color: #B71C1C; }
+
+        /* GAMES & MAPS */
+        .game-area { background: #FFFDE7; border: 3px dashed #FBC02D; padding: 20px; border-radius: 15px; text-align: center; margin-top: 15px; }
+        .map-box { border: 3px solid #795548; background: #D7CCC8; padding: 15px; border-radius: 10px; text-align: center; font-weight: bold; }
+        .scramble-btn { background: #FFCA28; border: none; padding: 10px 15px; margin: 5px; font-size: 1.2em; font-weight: bold; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 0 #F57F17; }
+        .memory-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .mem-card { background: var(--c-purple); color: var(--c-purple); height: 80px; display: flex; justify-content: center; align-items: center; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 1.1em; transition: 0.3s; user-select: none; }
+        .mem-card.flipped { background: white; color: var(--c-purple); border: 2px solid var(--c-purple); }
+        .mem-card.matched { background: #E1BEE7; color: #6A1B9A; border: 2px dashed #9C27B0; pointer-events: none; opacity: 0.7; }
+        
+        .btn-submit-mega { position: fixed; bottom: 20px; right: 20px; background: linear-gradient(45deg, #E91E63, #C2185B); color: white; padding: 15px 30px; font-size: 1.5em; font-family: 'Fredoka One', cursive; border: none; border-radius: 30px; cursor: pointer; box-shadow: 0 10px 20px rgba(233, 30, 99, 0.4); z-index: 1000; transition: 0.3s; }
+        .btn-submit-mega:hover { transform: scale(1.05); }
+
+    </style>
+</head>
+<body>
+
+<div id="top-bar">
+    <div style="font-family: 'Fredoka One'; font-size: 1.5em; color: var(--c-main);">MEGA TEST PRO</div>
+    <div class="progress-container">
+        <div style="display:flex; justify-content:space-between; font-size:0.9em; font-weight:bold; color:#555; margin-bottom:5px;">
+            <span>Tiến độ hoàn thành:</span><span id="prog-txt">0/0</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="prog-fill"></div></div>
+    </div>
+    <div class="score-box">ĐIỂM: <span id="total-score">0</span></div>
+</div>
+
+<div id="audio-controls">
+    <strong>⚙️ Tốc độ Đọc</strong>
+    <div class="speed-row">
+        <button class="btn-spd active" onclick="setSpd(0.9, this)">🏃 Vừa</button>
+        <button class="btn-spd" onclick="setSpd(0.7, this)">🚶 Chậm</button>
+        <button class="btn-spd" onclick="setSpd(0.4, this)">🐢 Rùa</button>
+    </div>
+</div>
+
+<div class="container">
+    <div class="mega-title">IELTS JUNIOR CHALLENGE</div>
+    <div class="sub-title">Unit 16: Weather & Places | 13 Nhiệm vụ 4 Kỹ năng đang chờ bé chinh phục!</div>
+
+    <div class="part-header" style="background: var(--c-main);">PART A: VOCABULARY</div>
+    <div class="part-box" style="border-color: var(--c-main);">
+        <div class="task-title" style="color: var(--c-main);">Task 1: Word Dictation (Nghe và chép chính tả)</div>
+        <p><i>Bấm loa nghe từ và gõ lại tiếng Anh vào ô trống.</i></p>
+        <div class="grid-3" id="task1-render"></div>
+
+        <div class="task-title" style="color: var(--c-main);">Task 2: Word Scramble (Giải mã từ vựng)</div>
+        <div class="game-area" id="task2-render">
+            <h3 id="scramble-vn" style="color:var(--c-main); margin-top:0;">...</h3>
+            <div id="scramble-slots" style="font-size:1.5em; letter-spacing:5px; font-weight:bold; margin-bottom:20px; color:#2E7D32;">_ _ _ _</div>
+            <div id="scramble-letters"></div>
+            <button class="btn-play" style="margin-top:15px; background:#9E9E9E; box-shadow:0 4px 0 #616161;" onclick="nextScramble()">Bỏ qua câu này ⏭️</button>
+        </div>
+    </div>
+
+    <div class="part-header" style="background: var(--c-orange);">PART B: GRAMMAR</div>
+    <div class="part-box" style="border-color: var(--c-orange);">
+        <div class="task-title" style="color: var(--c-orange);">Task 3: Multiple Choice (Trắc nghiệm)</div>
+        <div class="grid-2" id="task3-render"></div>
+
+        <div class="task-title" style="color: var(--c-orange);">Task 4: Sentence Reordering (Sắp xếp câu)</div>
+        <div class="grid-2" id="task4-render"></div>
+    </div>
+
+    <div class="part-header" style="background: var(--c-red);">PART C: LISTENING (Kỹ năng Nghe IELTS)</div>
+    <div class="part-box" style="border-color: var(--c-red);">
+        <div class="task-title" style="color: var(--c-red);">Task 5: Form Completion (Điền bảng thông tin)</div>
+        <button class="btn-play" style="background:var(--c-red); box-shadow:0 4px 0 #B71C1C;" onclick="playAudio('Hello, I am Lucy. Today is my birthday. The weather is very sunny. I want to buy a cake, so I am going to the bakery with my dad.')">🔊 NGHE ĐOẠN VĂN</button>
+        <div class="game-area" style="text-align:left; font-size:1.2em; line-height:2;">
+            <div style="text-align:center; font-weight:bold; color:#D32F2F; margin-bottom:10px;">NOTES: WEEKEND PLAN</div>
+            1. Name: <input type="text" class="ans-track" data-ans="lucy"><br>
+            2. Weather today: <input type="text" class="ans-track" data-ans="sunny"><br>
+            3. Place to go: The <input type="text" class="ans-track" data-ans="bakery">
+        </div>
+
+        <div class="task-title" style="color: var(--c-red);">Task 6: Listen and Choose (Nghe và chọn)</div>
+        <div class="grid-2" id="task6-render"></div>
+
+        <div class="task-title" style="color: var(--c-red);">Task 7: Map Labelling (Điền nhãn bản đồ)</div>
+        <p><i>Nghe hướng dẫn và điền tên địa điểm thích hợp vào bản đồ.</i></p>
+        <button class="btn-play" style="background:var(--c-red); box-shadow:0 4px 0 #B71C1C;" onclick="playAudio('Welcome to our town! Look at the map. In the center, we have the park. The supermarket is next to the park. Opposite the supermarket, across the street, is the bookshop.')">🔊 NGHE BẢN ĐỒ</button>
+        <div class="game-area" style="display: flex; flex-direction: column; align-items: center; gap: 15px; background: #ECEFF1;">
+            <div style="display:flex; gap:20px; align-items:center;">
+                <div class="map-box" style="background: #C8E6C9;">🌳 PARK</div>
+                <div class="map-box"><input type="text" class="ans-track" data-ans="supermarket" placeholder="Next to park" style="width:120px;"></div>
+            </div>
+            <div style="width: 100%; height: 40px; background: #9E9E9E; color: white; line-height: 40px; font-weight: bold; border-radius: 5px;">MAIN STREET</div>
+            <div style="display:flex; gap:20px; align-items:center;">
+                <div class="map-box" style="visibility: hidden;">🌳 PARK</div>
+                <div class="map-box"><input type="text" class="ans-track" data-ans="bookshop" placeholder="Opposite" style="width:120px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="part-header" style="background: var(--c-green);">PART D: READING (Đọc hiểu IELTS)</div>
+    <div class="part-box" style="border-color: var(--c-green);">
+        <div class="task-title" style="color: var(--c-green);">Task 8: True / False / Not Given</div>
+        <div style="background: #E8F5E9; padding: 15px; border-radius: 10px; margin-bottom: 20px; font-size: 1.1em; line-height: 1.8;">
+            <b>Read the passage:</b> "Yesterday, the weather in London was very windy and rainy. Many people stayed at home. Today, the weather is sunny and hot. Tim and his friends are at the water park. They are swimming and eating ice cream."
+        </div>
+        <div id="task8-render"></div>
+
+        <div class="task-title" style="color: var(--c-green);">Task 9: Sentence Gap-fill (Điền từ hoàn thành câu)</div>
+        <div class="q-card" style="font-size: 1.1em; line-height: 2.2;">
+            1. Yesterday, the weather in London was <input type="text" class="ans-track" data-ans="windy"> and rainy.<br>
+            2. Today, Tim and his friends are playing at the <input type="text" class="ans-track" data-ans="water park">.<br>
+            3. At the park, they are eating <input type="text" class="ans-track" data-ans="ice cream">.
+        </div>
+    </div>
+
+    <div class="part-header" style="background: var(--c-teal);">PART E: WRITING & SPEAKING</div>
+    <div class="part-box" style="border-color: var(--c-teal);">
+        <div class="task-title" style="color: var(--c-teal);">Task 10: Guided Writing (Viết báo cáo thời tiết)</div>
+        <p><i>Hoàn thành bản tin thời tiết sau:</i></p>
+        <div class="game-area" style="text-align:left; font-size:1.2em; line-height:2.2; background: #E0F2F1; border-color: #009688;">
+            "Good morning! Here is the weather report for today. In the morning, it will be very <input type="text" class="ans-track" data-ans="rainy" placeholder="có mưa">, so please bring your umbrella. In the afternoon, the sun will come out and it will be <input type="text" class="ans-track" data-ans="sunny" placeholder="có nắng">. It is a perfect time to go outside and visit the <input type="text" class="ans-track" data-ans="park" placeholder="công viên">."
+        </div>
+
+        <div class="task-title" style="color: var(--c-teal);">Task 11: Speaking - Best Response (Phản xạ giao tiếp)</div>
+        <p><i>Nghe giám khảo hỏi và chọn câu trả lời tự nhiên nhất.</i></p>
+        <div class="grid-2" id="task11-render"></div>
+    </div>
+
+    <div class="part-header" style="background: var(--c-purple);">PART F: FUN ARCADE (Góc Trò Chơi)</div>
+    <div class="part-box" style="border-color: var(--c-purple);">
+        <div class="task-title" style="color: var(--c-purple);">Task 12: Memory Match (Lật thẻ tìm cặp)</div>
+        <div style="font-weight:bold; text-align:center; color:var(--c-purple); margin-bottom:10px;">Thành tích: <span id="mem-score">0</span>/6 cặp</div>
+        <div class="memory-grid" id="task12-render"></div>
+
+        <div class="task-title" style="color: var(--c-purple);">Task 13: Sort It Out (Phân loại từ vựng)</div>
+        <p><i>Chạm vào từ màu cam, sau đó chạm vào hộp tương ứng để xếp đồ vào.</i></p>
+        <div style="text-align:center; font-weight:bold; margin-bottom:10px;">Đã xếp: <span id="sort-score">0</span>/8</div>
+        <div style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-bottom:20px; min-height:40px;" id="sort-pool"></div>
+        <div style="display:flex; gap:15px; justify-content:center;">
+            <div id="box-weather" style="border:3px dashed #29B6F6; padding:20px; border-radius:15px; flex:1; text-align:center; cursor:pointer;" onclick="dropSort('weather')"><b>🌦️ WEATHER</b></div>
+            <div id="box-places" style="border:3px dashed #AB47BC; padding:20px; border-radius:15px; flex:1; text-align:center; cursor:pointer;" onclick="dropSort('places')"><b>🏢 PLACES</b></div>
+        </div>
+    </div>
+
+</div>
+
+<button class="btn-submit-mega" onclick="checkAll()">🏆 NỘP BÀI CHẤM ĐIỂM</button>
+
+<script>
+    // --- AUDIO SYSTEM ---
+    let spd = 0.9;
+    function setSpd(val, btn) {
+        spd = val;
+        document.querySelectorAll('.btn-spd').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+    function playAudio(text) {
+        if('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            let u = new SpeechSynthesisUtterance(text);
+            u.lang = 'en-US'; u.rate = spd;
+            window.speechSynthesis.speak(u);
+        }
+    }
+    const actx = new (window.AudioContext || window.webkitAudioContext)();
+    function playSnd(isWin) {
+        if(actx.state==='suspended') actx.resume();
+        let o = actx.createOscillator(); let g = actx.createGain();
+        o.type = isWin?'sine':'sawtooth'; o.frequency.setValueAtTime(isWin?500:300, actx.currentTime); o.frequency.exponentialRampToValueAtTime(isWin?1000:100, actx.currentTime+0.1);
+        g.gain.setValueAtTime(0.1, actx.currentTime); g.gain.exponentialRampToValueAtTime(0.01, actx.currentTime+0.1);
+        o.connect(g); g.connect(actx.destination); o.start(); o.stop(actx.currentTime+0.1);
+    }
+
+    // --- DATA & RENDER ENGINE ---
+    function cleanStr(s) { return s.toLowerCase().trim().replace(/[.,?!]/g, ''); }
+    function checkInp(inp) {
+        let ans = inp.getAttribute('data-ans').split('|');
+        let val = cleanStr(inp.value);
+        if(val !== "") {
+            if(ans.includes(val)) { inp.className = 'ans-track correct'; playSnd(true); } 
+            else { inp.className = 'ans-track wrong'; playSnd(false); }
+        } else { inp.className = 'ans-track'; }
+        updateProg();
+    }
+    function checkRad(rad) {
+        let name = rad.name;
+        document.querySelectorAll(`input[name="${name}"]`).forEach(r => { r.parentElement.className = 'mcq-label'; });
+        if(rad.value === '1') { rad.parentElement.className = 'mcq-label mcq-correct'; playSnd(true); } 
+        else { rad.parentElement.className = 'mcq-label mcq-wrong'; playSnd(false); }
+        updateProg();
+    }
+
+    // TASK 1: Dictation
+    const t1_data = [ {en:"rainy", vn:"có mưa"}, {en:"sunny", vn:"có nắng"}, {en:"bakery", vn:"tiệm bánh"}, {en:"bookshop", vn:"hiệu sách"} ];
+    document.getElementById('task1-render').innerHTML = t1_data.map((d,i) => `
+        <div class="q-card">
+            <button class="btn-play" onclick="playAudio('${d.en}')">🔊 Nghe</button><br>
+            <i>(${d.vn})</i><br>
+            <input type="text" class="ans-track" data-ans="${d.en}" onchange="checkInp(this)" style="width:90%; margin-top:5px;">
+        </div>
+    `).join('');
+
+    // TASK 2: Scramble
+    const t2_data = [{en:"windy", vn:"có gió"}, {en:"cloudy", vn:"nhiều mây"}, {en:"supermarket", vn:"siêu thị"}, {en:"water park", vn:"công viên nước"}];
+    let scrIdx = 0; let scrAns = ""; let scrWord = "";
+    function loadScramble() {
+        if(scrIdx >= t2_data.length) { document.getElementById('task2-render').innerHTML = "<h3 style='color:green'>🎉 Hoàn thành!</h3>"; return; }
+        document.getElementById('scramble-vn').innerText = t2_data[scrIdx].vn;
+        scrWord = t2_data[scrIdx].en.toUpperCase().replace(/\s/g,''); scrAns = "";
+        document.getElementById('scramble-slots').innerText = Array(scrWord.length).fill('_').join(' ');
+        let arr = scrWord.split('').sort(()=>0.5-Math.random());
+        document.getElementById('scramble-letters').innerHTML = arr.map((c,i) => `<button class="scramble-btn" id="sbtn${i}" onclick="hitScr('${c}', this)">${c}</button>`).join('');
+    }
+    function hitScr(c, btn) {
+        btn.style.visibility = 'hidden'; scrAns += c;
+        let slots = Array(scrWord.length).fill('_');
+        for(let i=0; i<scrAns.length; i++) slots[i] = scrAns[i];
+        document.getElementById('scramble-slots').innerText = slots.join(' ');
+        if(scrAns.length === scrWord.length) {
+            if(scrAns === scrWord) { playSnd(true); document.getElementById('scramble-slots').style.color = '#4CAF50'; totalGamesScore++; updateProg(); setTimeout(nextScramble, 1000); }
+            else { playSnd(false); document.getElementById('scramble-slots').style.color = '#F44336'; setTimeout(()=>{ loadScramble(); document.getElementById('scramble-slots').style.color = '#2E7D32'; }, 1000); }
+        }
+    }
+    function nextScramble() { scrIdx++; loadScramble(); }
+    loadScramble();
+
+    // TASK 3: MCQ Grammar
+    const t3_data = [
+        {q: "What ___ the weather like yesterday?", a:["is","was","are"], c:1},
+        {q: "I want to buy some bread. Let's go to the ___.", a:["bakery","bookshop","water park"], c:0},
+        {q: "It is ___ today. We can fly a kite.", a:["rainy","windy","snowy"], c:1},
+        {q: "___ you want to go to the supermarket?", a:["Are","Is","Do"], c:2}
+    ];
+    document.getElementById('task3-render').innerHTML = t3_data.map((d,i) => `
+        <div class="q-card">
+            <b style="color: var(--c-orange);">${i+1}. ${d.q}</b>
+            <div style="margin-top: 10px;">
+                ${d.a.map((opt, j) => `<label class="mcq-label"><input type="radio" class="ans-rad" name="t3q${i}" value="${j===d.c?1:0}" onchange="checkRad(this)"> ${opt}</label>`).join('')}
+            </div>
+        </div>
+    `).join('');
+
+    // TASK 4: Reorder
+    const t4_data = [
+        {q:"like / today / what / is / weather / the / ?", a:"what is the weather like today"},
+        {q:"was / sunny / it / yesterday / .", a:"it was sunny yesterday"},
+        {q:"I / to / go / want / the / food stall / to / .", a:"i want to go to the food stall"}
+    ];
+    document.getElementById('task4-render').innerHTML = t4_data.map((d,i) => `
+        <div class="q-card">
+            <div style="color:#E65100; font-weight:bold; margin-bottom:5px;">${d.q}</div>
+            <input type="text" class="ans-track" data-ans="${d.a}" style="width:90%" onchange="checkInp(this)">
+        </div>
+    `).join('');
+
+    // TASK 6: Listen MCQ
+    const t6_data = [
+        {q:"Where is he going?", aud:"I want to buy some books, so I am going to the bookshop.", a:["Bakery","Bookshop","Supermarket"], c:1},
+        {q:"What was the weather like?", aud:"It was very rainy and cold yesterday.", a:["Rainy","Sunny","Windy"], c:0}
+    ];
+    document.getElementById('task6-render').innerHTML = t6_data.map((d,i) => `
+        <div class="q-card">
+            <button class="btn-play" style="background:var(--c-red); box-shadow:0 4px 0 #B71C1C;" onclick="playAudio('${d.aud}')">🔊 Nghe</button> 
+            <b style="color:var(--c-red);">${d.q}</b>
+            <div style="margin-top: 10px;">
+                ${d.a.map((opt, j) => `<label class="mcq-label"><input type="radio" class="ans-rad" name="t6q${i}" value="${j===d.c?1:0}" onchange="checkRad(this)"> ${opt}</label>`).join('')}
+            </div>
+        </div>
+    `).join('');
+
+    // TASK 8: T/F/NG
+    const t8_data = [
+        {q:"The weather in London was sunny yesterday.", c:0}, // F
+        {q:"Tim is at the water park today.", c:1}, // T
+        {q:"Tim is eating bread at the water park.", c:0} // F (eating ice cream)
+    ];
+    document.getElementById('task8-render').innerHTML = t8_data.map((d,i) => `
+        <div class="q-card" style="margin-bottom:10px;">
+            <b style="color:var(--c-green);">${i+1}. ${d.q}</b><br>
+            <div style="display:flex; gap:10px; margin-top:10px;">
+                <label class="mcq-label" style="flex:1; text-align:center;"><input type="radio" class="ans-rad" name="t8q${i}" value="${d.c===1?1:0}" onchange="checkRad(this)"> True</label>
+                <label class="mcq-label" style="flex:1; text-align:center;"><input type="radio" class="ans-rad" name="t8q${i}" value="${d.c===0?1:0}" onchange="checkRad(this)"> False</label>
+                <label class="mcq-label" style="flex:1; text-align:center;"><input type="radio" class="ans-rad" name="t8q${i}" value="${d.c===-1?1:0}" onchange="checkRad(this)"> Not Given</label>
+            </div>
+        </div>
+    `).join('');
+
+    // TASK 11: Speaking Best Response
+    const t11_data = [
+        {q:"What is your favorite weather?", a:["I like sunny weather because I can play outside.","I want to go to the bookshop.","Yesterday was very windy."], c:0},
+        {q:"Where do you usually go on weekends?", a:["It is rainy and cold.","I usually go to the supermarket with my mom.","The bakery is next to the park."], c:1}
+    ];
+    document.getElementById('task11-render').innerHTML = t11_data.map((d,i) => `
+        <div class="q-card">
+            <button class="btn-play" style="background:var(--c-teal); box-shadow:0 4px 0 #00796B;" onclick="playAudio('${d.q}')">🔊 Nghe câu hỏi</button>
+            <b style="color:var(--c-teal);">${d.q}</b>
+            <div style="margin-top:10px;">
+                ${d.a.map((opt, j) => `<label class="mcq-label"><input type="radio" class="ans-rad" name="t11q${i}" value="${j===d.c?1:0}" onchange="checkRad(this)"> ${opt}</label>`).join('')}
+            </div>
+        </div>
+    `).join('');
+
+    // TASK 12: Memory Match
+    const memData = [{e:"rainy",v:"có mưa"},{e:"sunny",v:"có nắng"},{e:"windy",v:"có gió"},{e:"bakery",v:"tiệm bánh"},{e:"bookshop",v:"hiệu sách"},{e:"park",v:"công viên"}];
+    let cards = []; memData.forEach(d => { cards.push({id:d.e, txt:d.e}); cards.push({id:d.e, txt:d.v}); });
+    cards.sort(()=>0.5-Math.random());
+    document.getElementById('task12-render').innerHTML = cards.map((c,i) => `<div class="mem-card" id="mc${i}" onclick="flipMem(${i}, '${c.id}')">${c.txt}</div>`).join('');
+    
+    let f1=null, f2=null, lock=false, memPairs=0; let totalGamesScore=0;
+    function flipMem(idx, id) {
+        let el = document.getElementById('mc'+idx);
+        if(lock || el===f1 || el.classList.contains('matched')) return;
+        el.classList.add('flipped');
+        if(!f1) { f1=el; f1.dataset.id=id; return; }
+        f2=el; f2.dataset.id=id; lock=true;
+        if(f1.dataset.id === f2.dataset.id) {
+            playSnd(true); f1.classList.add('matched'); f2.classList.add('matched');
+            memPairs++; document.getElementById('mem-score').innerText = memPairs;
+            totalGamesScore++; updateProg();
+            f1=null; f2=null; lock=false;
+        } else {
+            playSnd(false);
+            setTimeout(()=>{ f1.classList.remove('flipped'); f2.classList.remove('flipped'); f1=null; f2=null; lock=false; }, 800);
+        }
+    }
+
+    // TASK 13: Sort
+    const sortData = [
+        {txt:"sunny", t:"weather"}, {txt:"rainy", t:"weather"}, {txt:"cloudy", t:"weather"}, {txt:"windy", t:"weather"},
+        {txt:"bakery", t:"places"}, {txt:"supermarket", t:"places"}, {txt:"bookshop", t:"places"}, {txt:"food stall", t:"places"}
+    ].sort(()=>0.5-Math.random());
+    document.getElementById('sort-pool').innerHTML = sortData.map((d,i) => `<div style="background:#F3E5F5; border:2px solid #CE93D8; padding:5px 15px; border-radius:15px; cursor:pointer; font-weight:bold; color:#7B1FA2;" id="sw${i}" onclick="selSort(this, '${d.t}')">${d.txt}</div>`).join('');
+    
+    let curSort = null; let sortC = 0;
+    function selSort(el, type) {
+        document.querySelectorAll('#sort-pool div').forEach(d => d.style.background='#F3E5F5');
+        el.style.background = '#E1BEE7'; curSort = {el:el, t:type};
+    }
+    function dropSort(boxT) {
+        if(!curSort) return;
+        if(curSort.t === boxT) {
+            playSnd(true); curSort.el.onclick=null; curSort.el.style.background='#C8E6C9'; curSort.el.style.borderColor='#4CAF50'; curSort.el.style.color='#2E7D32';
+            document.getElementById('box-'+boxT).appendChild(curSort.el); curSort=null;
+            sortC++; document.getElementById('sort-score').innerText = sortC; totalGamesScore++; updateProg();
+        } else {
+            playSnd(false); curSort.el.style.background='#FFCDD2'; setTimeout(()=>curSort.el.style.background='#F3E5F5', 500); curSort=null;
+        }
+    }
+
+    // --- GLOBAL PROGRESS & SCORE ---
+    function updateProg() {
+        // Thuật toán đếm số lượng câu hỏi chính xác (radios chia 3 vì mỗi câu có 3 đáp án)
+        let totalItems = document.querySelectorAll('.ans-track').length + (document.querySelectorAll('.ans-rad').length/3) + 4 /*scramble*/ + 6 /*memory*/ + 8 /*sort*/;
+        let doneInputs = document.querySelectorAll('.ans-track.correct').length + document.querySelectorAll('.ans-track.wrong').length;
+        
+        let doneRads = 0;
+        let radNames = new Set([...document.querySelectorAll('.ans-rad')].map(r=>r.name));
+        radNames.forEach(n => { if(document.querySelector(`input[name="${n}"]:checked`)) doneRads++; });
+
+        let done = doneInputs + doneRads + totalGamesScore;
+        let pct = Math.round((done/totalItems)*100);
+        document.getElementById('prog-fill').style.width = pct + '%';
+        document.getElementById('prog-txt').innerText = `${done}/${Math.round(totalItems)}`;
+
+        // Tính điểm tổng (ước tính)
+        let score = (document.querySelectorAll('.ans-track.correct').length * 10) + 
+                    (document.querySelectorAll('.mcq-correct').length * 10) + 
+                    (totalGamesScore * 5);
+        document.getElementById('total-score').innerText = score;
+    }
+
+    function checkAll() {
+        alert("🎉 THẬT ĐÁNG KINH NGẠC! Bé đã hoàn thành khối lượng bài tập khổng lồ.\nSố điểm tạm tính của bé là: " + document.getElementById('total-score').innerText + " điểm!\nMẹ hãy thưởng cho bé một món quà thật lớn nhé!");
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+
+    // Init count
+    setTimeout(updateProg, 500);
+
+</script>
+</body>
+</html>
